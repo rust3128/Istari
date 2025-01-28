@@ -17,6 +17,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_menu_action_About_Istari_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

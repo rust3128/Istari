@@ -14,7 +14,6 @@
 *.so.*
 *_pch.h.cpp
 *_resource.rc
-*.qm
 .#*
 *.*#
 core
@@ -30,8 +29,6 @@ moc_*.cpp
 ui_*.h
 qrc_*.cpp
 Thumbs.db
-*.res
-*.rc
 /.qmake.cache
 /.qmake.stash
 

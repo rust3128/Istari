@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resources/Translations/qtbase_uk.qm</file>
+    </qresource>
+</RCC>
