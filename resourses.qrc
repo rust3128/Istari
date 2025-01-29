@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>Resources/Translations/qtbase_uk.qm</file>
+        <file>Resources/Images/eye_icon.png</file>
+        <file>Resources/Images/file_open_icon.png</file>
+        <file>Resources/Images/database_settings.png</file>
     </qresource>
 </RCC>

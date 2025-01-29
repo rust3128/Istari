@@ -1,16 +1,28 @@
 #include "mainwindow.h"
 #include "AppParams/appparams.h"
 #include "AppParams/loggincategories.h"
+#include <windows.h>
+#include <lm.h>
 
 
 #include <QApplication>
 #include <QFile>
 #include <QDateTime>
 #include <QTranslator>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlError>
 
 static QScopedPointer<QFile> m_logFile;  //Покажчик на файл логування
 // Оголошення оброблювача логування
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
+// Відкриття бази даних програми
+bool openDatabaseConnection();
+// Функція для читання параметрів з бази даних
+bool readParametersFromDatabase();
+
+
+
 
 int main(int argc, char *argv[])
 {
@@ -34,10 +46,69 @@ int main(int argc, char *argv[])
     }
 
 
+    // Відкрити базу даних
+    if (openDatabaseConnection()) {
+        // З'єднання з базою даних вдало встановлено
+
+        // Прочитати параметри з бази даних
+        if(!readParametersFromDatabase()){
+            qCritical(logCritical()) << "Неможливо завантажити параметри програми. Завершення роботи.";
+            return 1;
+        }
+    } else {
+        qCritical(logCritical()) << "База даних програми не відкрита. Завершення роботи.";
+        return 1;
+    }
+
+    // Отримання імені користувача
+    QString qUsername = QString::fromLocal8Bit(qgetenv("USERNAME").constData()).toUtf8();
+
+
+
+
     MainWindow w;
     qInfo(logInfo()) << "Запуск головного вікна програми.";
     w.show();
     return a.exec();
+}
+
+// Функція для читання параметрів з бази даних
+bool readParametersFromDatabase()
+{
+    bool result = false;
+    // Виконати запити SQL для отримання параметрів
+    QSqlQuery query;
+    if (query.exec("SELECT param_name, param_value FROM PARAMETERS")) {
+        // Отримати та встановити параметри в AppParameters
+        while (query.next()) {
+            QString paramName = query.value(0).toString();
+            QVariant paramValue = query.value(1);
+            AppParams::instance().setParameter(paramName, paramValue);
+        }
+        qInfo(logInfo()) << "Параметри програми успішно завантажені.";
+        result = true;
+    }
+    return result;
+}
+
+//Выдкриття бащи даних програми
+bool openDatabaseConnection()
+{
+    // Встановити з'єднання з базою даних, використовуючи параметри з AppParameters
+    QSqlDatabase db = QSqlDatabase::addDatabase("QIBASE");
+    db.setHostName(AppParams::instance().getParameter("dbHostName").toString());
+    db.setPort(AppParams::instance().getParameter("dbDatabasePort").toInt());
+    db.setDatabaseName(AppParams::instance().getParameter("dbDatabaseName").toString());
+    db.setUserName(AppParams::instance().getParameter("dbUserName").toString());
+    db.setPassword(AppParams::instance().getParameter("dbPassword").toString());
+    if(db.open()){
+        return true;
+    } else {
+        QString errMsg = db.lastError().text();
+        qCritical(logCritical()) << "Помилка відкриття бази даних додатка:" << errMsg;
+        MyMessage::showNotification(QMessageBox::Critical,"Критична помилка","Не можливи відкрити базу даних додатка!","Подальша робота не можлива.",errMsg);
+        return false;
+    }
 }
 
 

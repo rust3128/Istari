@@ -20,6 +20,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Sql)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Network)
+find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
 
 set(PROJECT_SOURCES
     main.cpp
@@ -39,6 +43,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         resourses.qrc
         AppParams/appparams.h AppParams/appparams.cpp
         AppParams/loggincategories.cpp AppParams/loggincategories.h
+        AppParams/criptpass.cpp AppParams/criptpass.h AppParams/dbsettingsdialog.cpp AppParams/dbsettingsdialog.h AppParams/dbsettingsdialog.ui AppParams/qaesencryption.cpp AppParams/qaesencryption.h
 
     )
 else()
@@ -59,6 +64,12 @@ add_dependencies(Istari generate_version_header)
 add_dependencies(Istari update_db_structure)
 
 target_link_libraries(Istari PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(Istari PRIVATE Qt6::Sql)
+target_link_libraries(Istari PRIVATE Qt6::Core)
+target_link_libraries(Istari PRIVATE Qt6::Network)
+target_link_libraries(Istari PRIVATE Qt6::Core5Compat)
+
+
 
 if(${QT_VERSION} VERSION_LESS 6.1.0)
     set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.Istari)
