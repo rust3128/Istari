@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "AppParams/databaseconfig.h"
 #include "version.h"
 
 #include <QMessageBox>
@@ -9,6 +10,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    //Зажаемо параметри підключення до БД АЗС
+    DatabaseConfig dbAZS("localhost",3050,"D:/Develop/DataBase/prolux1001.GDB","SYSDBA","masterkey");
+
+    dbDlg = new DatabseDialog(dbAZS);
+    setCentralWidget(dbDlg);
 }
 
 MainWindow::~MainWindow()

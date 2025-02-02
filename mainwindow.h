@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "DatabseDialog/databsedialog.h"
+
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -22,5 +24,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    DatabseDialog *dbDlg;
 };
 #endif // MAINWINDOW_H

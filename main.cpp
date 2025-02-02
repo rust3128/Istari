@@ -12,6 +12,8 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QDir>
+#include <QLockFile>
 
 static QScopedPointer<QFile> m_logFile;  //Покажчик на файл логування
 // Оголошення оброблювача логування
@@ -20,7 +22,8 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
 bool openDatabaseConnection();
 // Функція для читання параметрів з бази даних
 bool readParametersFromDatabase();
-
+//Отримання даних користувача
+void readUserProfile(QString userName);
 
 
 
@@ -63,6 +66,26 @@ int main(int argc, char *argv[])
     // Отримання імені користувача
     QString qUsername = QString::fromLocal8Bit(qgetenv("USERNAME").constData()).toUtf8();
 
+///////  Контролюемо запуск единого екземпляру програми //////////////////
+    // Вказуємо шлях до директорії додатку
+    QString appDirPath = QCoreApplication::applicationDirPath();
+    // Вказуємо шлях до теки "Locks"
+    QString locksDirPath = appDirPath + "/Locks";
+
+    // Перевіряємо чи існує папка "Locks", якщо ні — створюємо її
+    QDir().mkpath(locksDirPath);
+
+    // Вказуємо шлях до файлу блокування, додаючи ім'я користувача
+    QString lockFilePath = locksDirPath + "/Gandalf_" + qUsername + ".lock";
+    QLockFile lockFile(lockFilePath);
+
+    // Пробуємо заблокувати файл
+    if (!lockFile.tryLock()) {
+        QMessageBox::warning(nullptr, "Помилка", "Gandalf вже запущено. Пошукайте у панелі задач!.");
+        // Якщо файл заблокований, завершуємо роботу додатку
+        return 1;
+    }
+    readUserProfile(qUsername);
 
 
 
@@ -70,6 +93,35 @@ int main(int argc, char *argv[])
     qInfo(logInfo()) << "Запуск головного вікна програми.";
     w.show();
     return a.exec();
+}
+
+//Отримання даних користувача
+void readUserProfile(QString userName)
+{
+    QSqlQuery q;
+    q.prepare("EXECUTE PROCEDURE get_userid(:userName)");
+    q.bindValue(":userName",userName);
+    if(!q.exec()){
+        qCritical(logCritical()) << "Не вдалося отримати ID користувача." << q.lastError().text();
+    }
+    q.next();
+    int userID = q.value(0).toInt();
+    AppParams::instance().setParameter("userID",userID);
+    q.exec("commit work");
+    q.finish();
+
+    q.prepare("SELECT u.user_login, u.user_fio, u.user_role, u.isactive "
+              "FROM users u WHERE user_id = ?");
+    q.bindValue(0, userID);
+    if(!q.exec()) {
+        qCritical(logCritical()) << "Неможливо отримати дані користувача" << q.lastError().text();
+    }
+    q.next();
+    AppParams::instance().setParameter("userLogin",q.value(0));
+    AppParams::instance().setParameter("userFIO",q.value(1));
+    AppParams::instance().setParameter("userRole",q.value(2));
+    AppParams::instance().setParameter("isActive",q.value(3));
+
 }
 
 // Функція для читання параметрів з бази даних

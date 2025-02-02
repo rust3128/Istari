@@ -44,6 +44,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         AppParams/appparams.h AppParams/appparams.cpp
         AppParams/loggincategories.cpp AppParams/loggincategories.h
         AppParams/criptpass.cpp AppParams/criptpass.h AppParams/dbsettingsdialog.cpp AppParams/dbsettingsdialog.h AppParams/dbsettingsdialog.ui AppParams/qaesencryption.cpp AppParams/qaesencryption.h
+        AppParams/databaseconfig.h AppParams/databaseconfig.cpp
+        DatabseDialog/databsedialog.h DatabseDialog/databsedialog.cpp DatabseDialog/databsedialog.ui
+        DatabseDialog/treefilterproxymodel.h DatabseDialog/treefilterproxymodel.cpp
 
     )
 else()

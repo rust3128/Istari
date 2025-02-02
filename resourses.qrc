@@ -4,5 +4,7 @@
         <file>Resources/Images/eye_icon.png</file>
         <file>Resources/Images/file_open_icon.png</file>
         <file>Resources/Images/database_settings.png</file>
+        <file>Resources/Images/notOpenDatabase.png</file>
+        <file>Resources/Images/openDatabase.png</file>
     </qresource>
 </RCC>
