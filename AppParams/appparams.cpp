@@ -12,6 +12,11 @@ const QString AppParams::CONFIG_FILE_NAME = "Istari.ini";          // Файл �
 const QString AppParams::KEY_SOLT = "SapForever";
 const QString AppParams::VEKTOR_KEY = "Poltava1970Rust";
 
+const QMap<int, QString> AppParams::DATABASE_ITEM_HEADS = {
+    {1, "Tables"},
+    {2, "Generators"}
+};
+
 AppParams &AppParams::instance()
 {
     static AppParams inst;

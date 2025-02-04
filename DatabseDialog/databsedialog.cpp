@@ -1,10 +1,13 @@
 #include "databsedialog.h"
 #include "ui_databsedialog.h"
 #include "../AppParams/loggincategories.h"
+#include "../AppParams/appparams.h"
+#include "tableform.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QTreeWidgetItem>
+#include <QMdiSubWindow>
 
 DatabseDialog::DatabseDialog(DatabaseConfig dbC, QWidget *parent)
     : QDialog(parent)
@@ -87,7 +90,7 @@ void DatabseDialog::createModel()
             // Сортування списку таблиць за алфавітом
             std::sort(tables.begin(), tables.end());
 
-            QStandardItem *tablesItem = new QStandardItem("Tables");
+            QStandardItem *tablesItem = new QStandardItem(AppParams::instance().DATABASE_ITEM_HEADS.value(1));
             modelDB->appendRow(tablesItem);
 
             for (const QString &tableName : tables) {
@@ -105,7 +108,7 @@ void DatabseDialog::createModel()
 
         // Додавання генераторів до моделі
         if (!generators.isEmpty()) {
-            QStandardItem *generatorsItem = new QStandardItem("Generators");
+            QStandardItem *generatorsItem = new QStandardItem(AppParams::instance().DATABASE_ITEM_HEADS.value(2));
             modelDB->appendRow(generatorsItem);
             for (const QString &generatorName : generators) {
                 QStandardItem *generatorItem = new QStandardItem(generatorName);
@@ -154,4 +157,62 @@ void DatabseDialog::expandRecursively(const QModelIndex &index)
         expandRecursively(childIndex);
     }
 }
+
+
+void DatabseDialog::on_treeViewDatabase_doubleClicked(const QModelIndex &index)
+{
+    // Перевіряємо, чи індекс валідний
+    if (!index.isValid())
+        return;
+
+    // Отримуємо назву елемента
+    QString itemName = index.data(Qt::DisplayRole).toString();
+
+    // Отримуємо батьківський індекс
+    QModelIndex parentIndex = index.parent();
+
+    // Перевіряємо, чи батьківський індекс валідний
+    QString parentName;
+    if (parentIndex.isValid())
+    {
+        parentName = parentIndex.data(Qt::DisplayRole).toString();
+    }
+    else
+    {
+        parentName = "Root"; // або інше значення, якщо індекс не має батька
+        return;
+    }
+
+    // Виводимо назву елемента та його батьківського елемента
+    qDebug() << "Double-clicked item name:" << itemName;
+    qDebug() << "Parent item name:" << parentName;
+
+    // Перевіряємо, чи підвікно з такою назвою вже існує
+    foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList())
+    {
+        if (window->windowTitle() == itemName)
+        {
+            // Якщо підвікно вже існує, активуємо його
+            ui->mdiArea->setActiveSubWindow(window);
+            return;
+        }
+    }
+
+    // Якщо підвікно не існує, створюємо нове підвікно
+    QMdiSubWindow *subWindow = new QMdiSubWindow;
+
+    TableForm *tblWidget = new TableForm (itemName, subWindow);
+
+    subWindow->setWidget(tblWidget);
+
+    // Встановлюємо заголовок підвікна
+    subWindow->setWindowTitle(itemName);
+
+    // Додаємо підвікно до mdiArea
+    ui->mdiArea->addSubWindow(subWindow);
+
+    // Відображаємо підвікно
+    subWindow->show();
+}
+
 

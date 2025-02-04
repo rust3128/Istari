@@ -22,6 +22,8 @@ public:
     ~DatabseDialog();
 private slots:
     void filterTree(const QString &text);               // Слот для фільтрації дерева
+    void on_treeViewDatabase_doubleClicked(const QModelIndex &index);
+
 private:
     void connectToDatabase();                           //Підключення до бази даних
     void createUI();                                    //Відображення інтерфейсу форми

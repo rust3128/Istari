@@ -19,7 +19,7 @@ public:
     static const QString CONFIG_FILE_NAME;                      // Файл конфігурації
     static const QString KEY_SOLT;
     static const QString VEKTOR_KEY;
-
+    static const QMap<int, QString> DATABASE_ITEM_HEADS;             //Группи об'єктів бази даних яку будемо відображати
 private:
     QMap<QString, QVariant> param;                              // Параметри додатка
     AppParams();
