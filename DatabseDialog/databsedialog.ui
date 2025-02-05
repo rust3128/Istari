@@ -70,7 +70,7 @@
       </size>
      </property>
      <property name="title">
-      <string>GroupBox</string>
+      <string>Об'єкти БД</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="1" column="0" colspan="2">

@@ -184,8 +184,8 @@ void DatabseDialog::on_treeViewDatabase_doubleClicked(const QModelIndex &index)
     }
 
     // Виводимо назву елемента та його батьківського елемента
-    qDebug() << "Double-clicked item name:" << itemName;
-    qDebug() << "Parent item name:" << parentName;
+    // qDebug() << "Double-clicked item name:" << itemName;
+    // qDebug() << "Parent item name:" << parentName;
 
     // Перевіряємо, чи підвікно з такою назвою вже існує
     foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList())
