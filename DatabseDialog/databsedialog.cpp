@@ -15,6 +15,8 @@ DatabseDialog::DatabseDialog(DatabaseConfig dbC, QWidget *parent)
     , dbAZS(dbC)
 {
     ui->setupUi(this);
+    // Збереження початкового кольору тексту
+    originalTextColor = ui->lineEditFilter->palette().color(QPalette::Text);
     connectToDatabase();
     createModel();
     createUI();
@@ -61,7 +63,7 @@ void DatabseDialog::createUI()
         ui->labelStatusText->setStyleSheet("QLabel { color : red; }");
         strStatus = QString("Не вдалося підключитися.");
     }
-    strStatus += "\n"+dbAZS.getHostName()+":"+QString::number(dbAZS.getPort())+" "+dbAZS.getDatabaseName();
+    strStatus = dbAZS.getHostName()+"/"+QString::number(dbAZS.getPort())+":"+dbAZS.getDatabaseName() + " " + strStatus;
     ui->labelStatusText->setText(strStatus);
 
     // Встановлення заголовка для стовпця моделі (необов'язково)
@@ -75,8 +77,9 @@ void DatabseDialog::createUI()
     // Прив'язка проксі моделі до QTreeView
     ui->treeViewDatabase->setModel(proxyModel);
 
-    // Підключення сигналу textChanged до слота filterTree
+    // Підключення сигналу textChanged до слота filterTree та highlightNonLatinCharacters
     connect(ui->lineEditFilter, &QLineEdit::textChanged, this, &DatabseDialog::filterTree);
+    connect(ui->lineEditFilter, &QLineEdit::textChanged, this, &DatabseDialog::highlightNonLatinCharacters);
 
 }
 
@@ -98,23 +101,23 @@ void DatabseDialog::createModel()
                 tablesItem->appendRow(tableItem);
             }
         }
-        // Отримання та сортування списку генераторів
-        QStringList generators;
-        QSqlQuery query("SELECT RDB$GENERATOR_NAME FROM RDB$GENERATORS WHERE RDB$SYSTEM_FLAG = 0", db);
-        while (query.next()) {
-            generators << query.value(0).toString().trimmed();
-        }
-        std::sort(generators.begin(), generators.end());
+        // // Отримання та сортування списку генераторів
+        // QStringList generators;
+        // QSqlQuery query("SELECT RDB$GENERATOR_NAME FROM RDB$GENERATORS WHERE RDB$SYSTEM_FLAG = 0", db);
+        // while (query.next()) {
+        //     generators << query.value(0).toString().trimmed();
+        // }
+        // std::sort(generators.begin(), generators.end());
 
-        // Додавання генераторів до моделі
-        if (!generators.isEmpty()) {
-            QStandardItem *generatorsItem = new QStandardItem(AppParams::instance().DATABASE_ITEM_HEADS.value(2));
-            modelDB->appendRow(generatorsItem);
-            for (const QString &generatorName : generators) {
-                QStandardItem *generatorItem = new QStandardItem(generatorName);
-                generatorsItem->appendRow(generatorItem);
-            }
-        }
+        // // Додавання генераторів до моделі
+        // if (!generators.isEmpty()) {
+        //     QStandardItem *generatorsItem = new QStandardItem(AppParams::instance().DATABASE_ITEM_HEADS.value(2));
+        //     modelDB->appendRow(generatorsItem);
+        //     for (const QString &generatorName : generators) {
+        //         QStandardItem *generatorItem = new QStandardItem(generatorName);
+        //         generatorsItem->appendRow(generatorItem);
+        //     }
+        // }
     }
 
 
@@ -131,6 +134,24 @@ void DatabseDialog::filterTree(const QString &text)
     expandAllMatchingRows();
 }
 
+void DatabseDialog::highlightNonLatinCharacters(const QString &text)
+{
+    QPalette palette = ui->lineEditFilter->palette();
+
+    // Перевірка на наявність нелатинських символів
+    QRegularExpression nonLatinRegex("[^a-zA-Z]");
+    QRegularExpressionMatch match = nonLatinRegex.match(text);
+
+    if (match.hasMatch()) {
+        // Якщо знайдені нелатинські символи, змінюємо колір тексту на червоний
+        palette.setColor(QPalette::Text, Qt::red);
+    } else {
+        // Якщо всі символи латинські, змінюємо колір тексту на початковий
+        palette.setColor(QPalette::Text, originalTextColor);
+    }
+
+    ui->lineEditFilter->setPalette(palette);
+}
 
 
 void DatabseDialog::expandAllMatchingRows()

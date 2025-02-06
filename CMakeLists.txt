@@ -50,6 +50,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         DatabseDialog/tableform.h DatabseDialog/tableform.cpp DatabseDialog/tableform.ui
 
 
+
     )
 else()
     if(ANDROID)

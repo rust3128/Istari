@@ -1,6 +1,9 @@
 #include "tableform.h"
 #include "ui_tableform.h"
 
+#include <QSqlRecord>
+#include <QSqlIndex>
+
 TableForm::TableForm(QString tblName, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::TableForm)
@@ -89,9 +92,26 @@ void TableForm::createUI()
     // Автоматичне налаштування ширини стовбців
     ui->tableViewFilds->resizeColumnsToContents();
 
-    //Вкладка дані
+    // Вкладка Дані
     modelData = new QSqlTableModel(this, db);
     modelData->setTable(tableName);
+
+    // Отримання назви первинного ключа
+    QSqlRecord record = db.record(tableName);
+    QString primaryKey;
+
+    if (!record.isEmpty()) {
+        const QSqlIndex primaryIndex = db.primaryIndex(tableName);
+        if (!primaryIndex.isEmpty()) {
+            primaryKey = primaryIndex.fieldName(0); // отримуємо перший стовпець первинного ключа
+        }
+    }
+
+    // Якщо первинний ключ знайдено, сортуємо по ньому
+    if (!primaryKey.isEmpty()) {
+        modelData->setSort(modelData->fieldIndex(primaryKey), Qt::AscendingOrder);
+    }
+
     modelData->select();
 
     // Встановлення моделі для tableViewData
@@ -99,4 +119,5 @@ void TableForm::createUI()
 
     // Автоматичне налаштування ширини стовбців
     ui->tableViewData->resizeColumnsToContents();
+
 }

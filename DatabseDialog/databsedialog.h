@@ -4,10 +4,12 @@
 #include "../AppParams/databaseconfig.h"
 #include "treefilterproxymodel.h"
 
+
 #include <QDialog>
 #include <QSqlDatabase>
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
+#include <QRegularExpression>
 
 namespace Ui {
 class DatabseDialog;
@@ -21,7 +23,8 @@ public:
     explicit DatabseDialog(DatabaseConfig dbC, QWidget *parent = nullptr);
     ~DatabseDialog();
 private slots:
-    void filterTree(const QString &text);               // Слот для фільтрації дерева
+    void filterTree(const QString &text);                               // Слот для фільтрації дерева
+    void highlightNonLatinCharacters(const QString &text);              // слот для обробки зміни тексту.
     void on_treeViewDatabase_doubleClicked(const QModelIndex &index);
 
 private:
@@ -36,7 +39,8 @@ private:
     QSqlDatabase db;                                //База даних об'єкту
     bool isConnected;                               //Чи вдалось підключитися до бази даних
     QStandardItemModel *modelDB;                    //Модель структури бази даних
-    TreeFilterProxyModel *proxyModel;              // Проксі модель для фільтрації
+    TreeFilterProxyModel *proxyModel;               // Проксі модель для фільтрації
+    QColor originalTextColor;                       // Збереження початкового кольору тексту
 };
 
 #endif // DATABSEDIALOG_H
