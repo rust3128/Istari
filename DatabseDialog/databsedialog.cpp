@@ -1,13 +1,16 @@
 #include "databsedialog.h"
+#include "DatabseDialog/ui_databsedialog.h"
 #include "ui_databsedialog.h"
 #include "../AppParams/loggincategories.h"
 #include "../AppParams/appparams.h"
 #include "tableform.h"
+#include "sqleditorform.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QTreeWidgetItem>
 #include <QMdiSubWindow>
+#include <QFileInfo>
 
 DatabseDialog::DatabseDialog(DatabaseConfig dbC, QWidget *parent)
     : QDialog(parent)
@@ -20,6 +23,11 @@ DatabseDialog::DatabseDialog(DatabaseConfig dbC, QWidget *parent)
     connectToDatabase();
     createModel();
     createUI();
+    // Перевірка назви виконуваного файлу
+    QFileInfo exeFile(QCoreApplication::applicationFilePath());
+    if (exeFile.fileName() != "Istari.exe") {
+        ui->toolButtonFullScreen->show();
+    }
 }
 
 DatabseDialog::~DatabseDialog()
@@ -48,11 +56,14 @@ void DatabseDialog::connectToDatabase()
         QString errMsg = db.lastError().text();
         qCritical(logCritical()) << "Помилка відкриття бази даних додатка:" << errMsg;
         MyMessage::showNotification(QMessageBox::Critical,"Критична помилка","Не можливо відкрити базу даних об'єкта!","Перевірте параметри підключення до бази даних.",errMsg);
+        emit noConnDB();
     }
 }
 //Відображення інтерфейсу форми
 void DatabseDialog::createUI()
 {
+    ui->toolButtonFullScreen->hide();
+    ui->toolButtonSQLEditor->setShortcut(QKeySequence("F12"));
     QString strStatus;
     if(isConnected){
         ui->labelStatusLogo->setPixmap(QPixmap(":/Resources/Images/openDatabase.png"));
@@ -236,4 +247,29 @@ void DatabseDialog::on_treeViewDatabase_doubleClicked(const QModelIndex &index)
     subWindow->show();
 }
 
+
+void DatabseDialog::on_toolButtonFullScreen_clicked()
+{
+    if (isFullScreen()) {
+        showNormal();
+    } else {
+        showFullScreen();
+    }
+}
+
+
+void DatabseDialog::on_toolButtonSQLEditor_clicked()
+{
+    QMdiSubWindow *subWindow = new QMdiSubWindow;
+
+    SqlEditorForm *sqlEdit = new SqlEditorForm(subWindow);
+    subWindow->setWidget(sqlEdit);
+     // Встановлюємо заголовок підвікна
+     subWindow->setWindowTitle("SQL Editor");
+    // Додаємо підвікно до mdiArea
+    ui->mdiArea->addSubWindow(subWindow);
+
+    // Відображаємо підвікно
+    subWindow->show();
+}
 

@@ -53,7 +53,7 @@ AppParams::AppParams()
 // Метод для встановлення значень за замовчуванням
 void AppParams::setDefaultParameters()
 {
-
+    setParameter("isIstary", true);
 }
 // Метод для зчитування параметрів підключення до бази даних з INI-файлу
 void AppParams::readDatabaseParametersFromIniFile()

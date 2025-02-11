@@ -24,7 +24,7 @@
    <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="elideMode">
       <enum>Qt::TextElideMode::ElideRight</enum>
@@ -57,7 +57,7 @@
      </widget>
      <widget class="QWidget" name="tabData">
       <attribute name="title">
-       <string>Данні</string>
+       <string>Дані</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">

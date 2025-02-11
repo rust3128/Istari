@@ -6,5 +6,7 @@
         <file>Resources/Images/database_settings.png</file>
         <file>Resources/Images/notOpenDatabase.png</file>
         <file>Resources/Images/openDatabase.png</file>
+        <file>Resources/Images/sql_editor.png</file>
+        <file>Resources/Images/full-screen.png</file>
     </qresource>
 </RCC>
