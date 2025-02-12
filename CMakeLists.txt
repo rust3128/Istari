@@ -49,6 +49,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         DatabseDialog/treefilterproxymodel.h DatabseDialog/treefilterproxymodel.cpp
         DatabseDialog/tableform.h DatabseDialog/tableform.cpp DatabseDialog/tableform.ui
         DatabseDialog/sqleditorform.h DatabseDialog/sqleditorform.cpp DatabseDialog/sqleditorform.ui
+        DatabseDialog/sqlsyntaxhighlighter.h DatabseDialog/sqlsyntaxhighlighter.cpp
+        DatabseDialog/mdisubwindow.h DatabseDialog/mdisubwindow.cpp
 
 
 

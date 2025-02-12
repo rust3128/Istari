@@ -8,5 +8,6 @@
         <file>Resources/Images/openDatabase.png</file>
         <file>Resources/Images/sql_editor.png</file>
         <file>Resources/Images/full-screen.png</file>
+        <file>Resources/Images/run_SQL.png</file>
     </qresource>
 </RCC>

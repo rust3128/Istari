@@ -28,11 +28,35 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
+        <widget class="QToolButton" name="toolButtonRunSQL">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Виконати (&lt;span style=&quot; font-weight:700;&quot;&gt;F9&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../resourses.qrc">
+           <normaloff>:/Resources/Images/run_SQL.png</normaloff>:/Resources/Images/run_SQL.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
         <widget class="QSplitter" name="splitter">
          <property name="orientation">
           <enum>Qt::Orientation::Vertical</enum>
          </property>
-         <widget class="QPlainTextEdit" name="plainTextEditSQL"/>
+         <widget class="QPlainTextEdit" name="plainTextEditSQL">
+          <property name="font">
+           <font>
+            <family>DejaVu Sans Mono</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+         </widget>
          <widget class="QTextEdit" name="textEditMessage"/>
         </widget>
        </item>
@@ -52,6 +76,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resourses.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -4,6 +4,7 @@
 #include "../AppParams/loggincategories.h"
 #include "../AppParams/appparams.h"
 #include "tableform.h"
+#include "mdisubwindow.h"
 #include "sqleditorform.h"
 
 #include <QSqlQuery>
@@ -230,18 +231,18 @@ void DatabseDialog::on_treeViewDatabase_doubleClicked(const QModelIndex &index)
         }
     }
 
-    // Якщо підвікно не існує, створюємо нове підвікно
-    QMdiSubWindow *subWindow = new QMdiSubWindow;
-
-    TableForm *tblWidget = new TableForm (itemName, subWindow);
-
+    // Створюємо підвікно
+    MdiSubWindow *subWindow = new MdiSubWindow;
+    TableForm *tblWidget = new TableForm(itemName, subWindow);
     subWindow->setWidget(tblWidget);
-
-    // Встановлюємо заголовок підвікна
     subWindow->setWindowTitle(itemName);
-
-    // Додаємо підвікно до mdiArea
     ui->mdiArea->addSubWindow(subWindow);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+
+    // Видаляти вкладку перед знищенням підвікна
+    connect(subWindow, &MdiSubWindow::aboutToClose, this, [=]() {
+        ui->mdiArea->removeSubWindow(subWindow);
+    });
 
     // Відображаємо підвікно
     subWindow->show();
@@ -260,7 +261,7 @@ void DatabseDialog::on_toolButtonFullScreen_clicked()
 
 void DatabseDialog::on_toolButtonSQLEditor_clicked()
 {
-    QMdiSubWindow *subWindow = new QMdiSubWindow;
+    MdiSubWindow *subWindow = new MdiSubWindow;
 
     SqlEditorForm *sqlEdit = new SqlEditorForm(subWindow);
     subWindow->setWidget(sqlEdit);
@@ -268,7 +269,12 @@ void DatabseDialog::on_toolButtonSQLEditor_clicked()
      subWindow->setWindowTitle("SQL Editor");
     // Додаємо підвікно до mdiArea
     ui->mdiArea->addSubWindow(subWindow);
+     subWindow->setAttribute(Qt::WA_DeleteOnClose);
 
+     // Видаляти вкладку перед знищенням підвікна
+     connect(subWindow, &MdiSubWindow::aboutToClose, this, [=]() {
+         ui->mdiArea->removeSubWindow(subWindow);
+     });
     // Відображаємо підвікно
     subWindow->show();
 }

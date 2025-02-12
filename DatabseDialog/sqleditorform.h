@@ -15,6 +15,9 @@ public:
     explicit SqlEditorForm(QWidget *parent = nullptr);
     ~SqlEditorForm();
 
+private slots:
+    void on_toolButtonRunSQL_clicked();
+
 private:
     void createUI();
 private:
