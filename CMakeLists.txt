@@ -51,6 +51,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         DatabseDialog/sqleditorform.h DatabseDialog/sqleditorform.cpp DatabseDialog/sqleditorform.ui
         DatabseDialog/sqlsyntaxhighlighter.h DatabseDialog/sqlsyntaxhighlighter.cpp
         DatabseDialog/mdisubwindow.h DatabseDialog/mdisubwindow.cpp
+        DatabseDialog/linenumberarea.h
+        DatabseDialog/linenumberarea.cpp
+        DatabseDialog/codeeditor.h
+        DatabseDialog/codeeditor.cpp
 
 
 
