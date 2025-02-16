@@ -20,9 +20,9 @@ public:
     ~SqlEditorForm();
 
 private slots:
-    void on_toolButtonRunSQL_clicked();
-
     void on_tabWidget_currentChanged(int index);
+    void on_tableViewHistory_doubleClicked(const QModelIndex &index);
+    void on_pushButtonRunSQL_clicked();
 
 private:
     void createUI();

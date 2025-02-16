@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <property name="documentMode">
       <bool>true</bool>
@@ -27,20 +27,6 @@
        <string>Редактор</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QToolButton" name="toolButtonRunSQL">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Виконати (&lt;span style=&quot; font-weight:700;&quot;&gt;F9&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../resourses.qrc">
-           <normaloff>:/Resources/Images/run_SQL.png</normaloff>:/Resources/Images/run_SQL.png</iconset>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0" colspan="2">
         <widget class="QSplitter" name="splitter">
          <property name="orientation">
@@ -59,6 +45,33 @@
          </widget>
          <widget class="QTextEdit" name="textEditMessage"/>
         </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="pushButtonRunSQL">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Виконати (&lt;span style=&quot; font-weight:700;&quot;&gt;F9&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Run SQL</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../resourses.qrc">
+           <normaloff>:/Resources/Images/run_SQL.png</normaloff>:/Resources/Images/run_SQL.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

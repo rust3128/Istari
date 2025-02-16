@@ -28,7 +28,7 @@ void SqlEditorForm::createUI()
     new SqlSyntaxHighlighter(ui->plainTextEditSQL->document());
     ui->splitter->setStretchFactor(0,3);
     ui->splitter->setStretchFactor(1,1);
-    ui->toolButtonRunSQL->setShortcut(QKeySequence("F9"));
+    ui->pushButtonRunSQL->setShortcut(QKeySequence("F9"));
     ui->tabWidget->setCurrentIndex(0);
 
     int index = ui->tabWidget->indexOf(ui->tabResult);
@@ -39,53 +39,6 @@ void SqlEditorForm::createUI()
     ui->tableViewResultSQL->setModel(modelQuery);
     ui->tableViewHistory->setModel(historyModel);
 
-}
-
-
-
-void SqlEditorForm::on_toolButtonRunSQL_clicked()
-{
-    QString sqlQuery = ui->plainTextEditSQL->toPlainText().trimmed();
-    if (sqlQuery.isEmpty()) {
-        ui->textEditMessage->setText("Запит порожній!");
-        return;
-    }
-
-    QSqlQuery query(db);
-    bool success = true;
-    modelQuery->clear();
-
-    if (sqlQuery.toUpper().startsWith("SELECT")) {
-        // Виконуємо SELECT-запит
-        modelQuery->setQuery(sqlQuery, db);
-
-        if (modelQuery->lastError().isValid()) {
-            ui->textEditMessage->setText("Помилка: " + modelQuery->lastError().text());
-            success = false;
-        } else {
-            ui->textEditMessage->clear(); // Очищаємо повідомлення про помилки
-            ui->tableViewResultSQL->resizeColumnsToContents();
-            // Переключаємо вкладку на tabResult
-            int index = ui->tabWidget->indexOf(ui->tabResult);
-            if (index != -1) {
-                ui->tabWidget->setTabEnabled(index, true);
-                ui->tabWidget->setCurrentIndex(index);
-            }
-        }
-    } else {
-        ui->textEditMessage->setText("На поточний час доступне виконня тільки SELECT запитів.");
-        // // Виконуємо будь-який інший запит (INSERT, UPDATE, DELETE, тощо)
-        // if (!query.exec(sqlQuery)) {
-        //      success = false;
-        //     ui->textEditMessage->setText("Помилка: " + query.lastError().text());
-        // } else {
-        //     ui->textEditMessage->setText("Запит виконано успішно.");
-        // }
-    }
-    // Зберігаємо тільки успішні запити
-    if (success) {
-        saveQueryHistory(sqlQuery);
-    }
 }
 
 void SqlEditorForm::saveQueryHistory(const QString &queryText)
@@ -134,3 +87,62 @@ void SqlEditorForm::loadQueryHistory() {
     ui->tableViewHistory->resizeColumnToContents(1); // "Час" – автоматичне визначення ширини
     ui->tableViewHistory->resizeColumnToContents(2); // "Користувач" – автоматичне визначення ширини
 }
+
+void SqlEditorForm::on_tableViewHistory_doubleClicked(const QModelIndex &index)
+{
+    QString historySQL = index.sibling(index.row(),0).data().toString();
+    ui->plainTextEditSQL->clear();
+    ui->plainTextEditSQL->setPlainText(historySQL);
+
+    int tabIndex = ui->tabWidget->indexOf(ui->tabEdit);
+    if (tabIndex != -1) {
+        ui->tabWidget->setCurrentIndex(tabIndex);
+    }
+}
+
+
+void SqlEditorForm::on_pushButtonRunSQL_clicked()
+{
+    QString sqlQuery = ui->plainTextEditSQL->toPlainText().trimmed();
+    if (sqlQuery.isEmpty()) {
+        ui->textEditMessage->setText("Запит порожній!");
+        return;
+    }
+
+    QSqlQuery query(db);
+    bool success = true;
+    modelQuery->clear();
+
+    if (sqlQuery.toUpper().startsWith("SELECT")) {
+        // Виконуємо SELECT-запит
+        modelQuery->setQuery(sqlQuery, db);
+
+        if (modelQuery->lastError().isValid()) {
+            ui->textEditMessage->setText("Помилка: " + modelQuery->lastError().text());
+            success = false;
+        } else {
+            ui->textEditMessage->clear(); // Очищаємо повідомлення про помилки
+            ui->tableViewResultSQL->resizeColumnsToContents();
+            // Переключаємо вкладку на tabResult
+            int index = ui->tabWidget->indexOf(ui->tabResult);
+            if (index != -1) {
+                ui->tabWidget->setTabEnabled(index, true);
+                ui->tabWidget->setCurrentIndex(index);
+            }
+        }
+    } else {
+        ui->textEditMessage->setText("На поточний час доступне виконня тільки SELECT запитів.");
+        // // Виконуємо будь-який інший запит (INSERT, UPDATE, DELETE, тощо)
+        // if (!query.exec(sqlQuery)) {
+        success = false;
+        //     ui->textEditMessage->setText("Помилка: " + query.lastError().text());
+        // } else {
+        //     ui->textEditMessage->setText("Запит виконано успішно.");
+        // }
+    }
+    // Зберігаємо тільки успішні запити
+    if (success) {
+        saveQueryHistory(sqlQuery);
+    }
+}
+
