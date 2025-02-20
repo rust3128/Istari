@@ -4,6 +4,7 @@
 #include "../AppParams/loggincategories.h"
 #include "../AppParams/appparams.h"
 
+#include <QScrollBar>
 
 SqlEditorForm::SqlEditorForm(QWidget *parent)
     : QWidget(parent)
@@ -26,6 +27,9 @@ void SqlEditorForm::createUI()
 {
     qInfo(logInfo()) << "CreateUI";
     new SqlSyntaxHighlighter(ui->plainTextEditSQL->document());
+    // Налаштовуємо автодоповнення
+    setupSqlCompleter();
+
     ui->splitter->setStretchFactor(0,3);
     ui->splitter->setStretchFactor(1,1);
     ui->pushButtonRunSQL->setShortcut(QKeySequence("F9"));
@@ -88,6 +92,8 @@ void SqlEditorForm::loadQueryHistory() {
     ui->tableViewHistory->resizeColumnToContents(2); // "Користувач" – автоматичне визначення ширини
 }
 
+
+
 void SqlEditorForm::on_tableViewHistory_doubleClicked(const QModelIndex &index)
 {
     QString historySQL = index.sibling(index.row(),0).data().toString();
@@ -146,3 +152,62 @@ void SqlEditorForm::on_pushButtonRunSQL_clicked()
     }
 }
 
+void SqlEditorForm::setupSqlCompleter()
+{
+    QStringList sqlKeywords = {
+        "SELECT", "FROM", "WHERE", "INSERT", "UPDATE", "DELETE",
+        "JOIN", "LEFT JOIN", "RIGHT JOIN", "INNER JOIN", "ORDER BY",
+        "GROUP BY", "HAVING", "LIMIT", "OFFSET", "CREATE TABLE",
+        "ALTER TABLE", "DROP TABLE", "PRIMARY KEY", "FOREIGN KEY",
+        "NOT NULL", "DEFAULT", "UNIQUE", "CHECK", "INDEX"
+    };
+
+    sqlCompleter = new QCompleter(sqlKeywords, this);
+    sqlCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    sqlCompleter->setCompletionMode(QCompleter::PopupCompletion);
+    sqlCompleter->setWidget(ui->plainTextEditSQL);
+
+    connect(sqlCompleter, SIGNAL(activated(QString)), this, SLOT(insertCompletion(QString)));
+}
+
+
+void SqlEditorForm::insertCompletion(const QString &completion)
+{
+    QTextCursor tc = ui->plainTextEditSQL->textCursor();
+    tc.movePosition(QTextCursor::StartOfWord, QTextCursor::KeepAnchor);
+    tc.insertText(completion);
+    ui->plainTextEditSQL->setTextCursor(tc);
+}
+
+
+
+void SqlEditorForm::keyPressEvent(QKeyEvent *e)
+{
+    QWidget::keyPressEvent(e); // Викликаємо стандартну обробку
+
+    // Ігноруємо клавіші, які не впливають на текст
+    if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ||
+        e->key() == Qt::Key_Escape || e->key() == Qt::Key_Tab) {
+        return;
+    }
+
+    // Отримуємо поточне слово під курсором
+    QString prefix = textUnderCursor();
+    if (prefix.isEmpty()) {
+        sqlCompleter->popup()->hide();
+        return;
+    }
+
+    // Передаємо в `QCompleter`
+    sqlCompleter->setCompletionPrefix(prefix);
+    QRect cr = ui->plainTextEditSQL->cursorRect();
+    cr.setWidth(sqlCompleter->popup()->sizeHintForColumn(0) + 20);
+    sqlCompleter->complete(cr);
+}
+
+QString SqlEditorForm::textUnderCursor() const
+{
+    QTextCursor tc = ui->plainTextEditSQL->textCursor();
+    tc.select(QTextCursor::WordUnderCursor);
+    return tc.selectedText();
+}
